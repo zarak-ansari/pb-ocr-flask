@@ -1,18 +1,14 @@
 import os
-from flask import Flask, flash, request, redirect, url_for
-from werkzeug.utils import secure_filename
+import io
+from flask import Flask, flash, request, redirect, send_file
 from easyocr import Reader
-from utils import process_image
+from utils import create_excel_file, process_image
 
-UPLOAD_FOLDER = "C:\\Users\\zarak\\Workspace\\pb_ocr_flask\\uploads"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 
 reader = Reader(['en'])
-
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -27,32 +23,20 @@ def upload_file():
             return redirect(request.url)
         results = []
         for file in request.files.getlist('file'):
-            # If the user does not select a file, the browser submits an
-            # empty file without a filename.
-            if file and allowed_file(file.filename):
-                image_and_text = process_image(reader, file, 1550, 300, 1910, 380)
-                results.append(image_and_text.get('text'))
-                # filename = secure_filename(file.filename)
-                # cropped_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return ", ".join(results)
+            if file and allowed_file(file.filename):                
+                results.append(process_image(reader, file, 1550, 300, 1910, 380))
+        
+        excel_bytes_array = create_excel_file(results)
+
+        return send_file(excel_bytes_array,
+                        mimetype='application/vnd.ms-excel',
+                        download_name='output.xlsx')
     return '''
     <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
+    <title>Prize Bonds OCR</title>
+    <h1>Upload Scanned Images</h1>
     <form method=post enctype=multipart/form-data>
       <input type=file name=file multiple=true>
       <input type=submit value=Upload>
     </form>
-    '''
-
-@app.route('/done')
-def files_uploaded():
-    return '''
-    <!doctype html>
-    <head>
-    <title>Success!</title>
-    </head>
-    <body>
-    <h1>Files uploaded</h1>
-    </body>
     '''
