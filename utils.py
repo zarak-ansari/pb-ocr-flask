@@ -13,9 +13,25 @@ def process_image(reader, file, left, top, right, bottom):
     img_byte_arr = io.BytesIO()
     cropped_img.save(img_byte_arr, format='JPEG')
     cropped_img_bytes = img_byte_arr.getvalue()
-    text = reader.readtext(cropped_img_bytes, detail=0, paragraph=True)
-    print(text)
-    return cropped_img
+    result = reader.readtext(cropped_img_bytes, allowlist='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')[0]
+    processed_text = process_text(result[1])
+
+    return {"image_file": file.filename, "series": processed_text.get('series'), "serial": processed_text.get('serial'), "confidence_level": result[2], "image": cropped_img}
+
+def process_text(input_text):
+    series = input_text.slice(0,-6)
+    series.replace('4', 'A')
+    series.replace('6', 'G')
+    series.replace('0','O')
+    series.replace('2','Z')
+
+    serial = input_text.slice(-6)
+    serial.replace('O','0')
+    serial.replace('l','1')
+    serial.replace('i','1')
+    serial.replace('I','1')
+
+    return {"series":series, "serial": serial}
 
     # # Iterate through the images in the selected directory
     # for filename in os.listdir(image_dir):

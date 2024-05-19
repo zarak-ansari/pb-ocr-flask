@@ -2,7 +2,7 @@ import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from easyocr import Reader
-from utils.ocr import process_image
+from utils import process_image
 
 UPLOAD_FOLDER = "C:\\Users\\zarak\\Workspace\\pb_ocr_flask\\uploads"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -25,15 +25,16 @@ def upload_file():
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        
+        results = []
         for file in request.files.getlist('file'):
             # If the user does not select a file, the browser submits an
             # empty file without a filename.
             if file and allowed_file(file.filename):
-                cropped_image = process_image(reader, file, 1550, 300, 1910, 380)
-                filename = secure_filename(file.filename)
-                cropped_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return redirect(url_for('files_uploaded'))
+                image_and_text = process_image(reader, file, 1550, 300, 1910, 380)
+                results.append(image_and_text.get('text'))
+                # filename = secure_filename(file.filename)
+                # cropped_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return ", ".join(results)
     return '''
     <!doctype html>
     <title>Upload new File</title>
