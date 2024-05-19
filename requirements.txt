@@ -1,5 +1,5 @@
-flask
-werkzeug
-easyocr
-xlsxwriter
+easyocr==1.7.1
+Flask==3.0.3
+Pillow==10.3.0
+XlsxWriter==3.2.0
 gunicorn
