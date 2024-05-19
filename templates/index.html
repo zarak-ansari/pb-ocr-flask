@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prize Bonds OCR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- <img src="placeholder.jpg" alt="Logo" class="logo"> -->
+        <h1>Prize Bonds OCR Application</h1>
+    </div>
+    <div class="container">
+        <h2>Upload Scanned Images</h2>
+        <form method="post" enctype="multipart/form-data">
+            <label for="left">Left</label>
+            <input type="number" name="left" min="0" step="1" required>
+            <label for="top">Top</label>
+            <input type="number" name="top" min="0" step="1" required>
+            <label for="right">Right</label>
+            <input type="number" name="right" min="0" step="1" required>
+            <label for="bottom">Bottom</label>
+            <input type="number" name="bottom" min="0" step="1" required>
+            <label for="file">Files</label>
+            <input type="file" name="file" multiple>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+
+</html>
